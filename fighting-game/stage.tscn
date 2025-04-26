@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3 uid="uid://c3egaxt3ls01w"]
+
+[ext_resource type="PackedScene" uid="uid://bpux2wev46ea7" path="res://platform.tscn" id="1_aees8"]
+[ext_resource type="Script" uid="uid://b4cmbte8tcuow" path="res://stage.gd" id="1_rnkuw"]
+[ext_resource type="Script" uid="uid://dwfv6507wqoqt" path="res://main_camera.gd" id="2_rnkuw"]
+[ext_resource type="PackedScene" uid="uid://c1nje6sg0i5pu" path="res://jumpthru_form.tscn" id="4_gx6sy"]
+
+[node name="Stage" type="Node2D"]
+script = ExtResource("1_rnkuw")
+
+[node name="Platform" parent="." instance=ExtResource("1_aees8")]
+scale = Vector2(23.6, 1)
+
+[node name="Main_Camera" type="Camera2D" parent="."]
+scale = Vector2(0.742667, 0.371812)
+position_smoothing_enabled = true
+script = ExtResource("2_rnkuw")
+
+[node name="Player_Spawn1" type="Node2D" parent="." groups=["Spawner"]]
+position = Vector2(-151, -29)
+
+[node name="Player_Spawn2" type="Node2D" parent="." groups=["Spawner"]]
+position = Vector2(139, -31)
+
+[node name="jumpthru_form" parent="." instance=ExtResource("4_gx6sy")]
+position = Vector2(-113, -42)
+scale = Vector2(3.48, 0.28)
+
+[node name="jumpthru_form2" parent="." instance=ExtResource("4_gx6sy")]
+position = Vector2(112, -42)
+scale = Vector2(3.48, 0.28)

@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3 uid="uid://c1nje6sg0i5pu"]
+
+[ext_resource type="Script" uid="uid://mulw0q0156vw" path="res://jumpthru_form.gd" id="1_qwwim"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5ajho"]
+
+[node name="jumpthru_form" type="StaticBody2D"]
+collision_layer = 4
+script = ExtResource("1_qwwim")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_5ajho")
+
+[node name="JumpThruPlatform" type="Area2D" parent="."]
+scale = Vector2(1.13737, 2.76667)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="JumpThruPlatform"]
+shape = SubResource("RectangleShape2D_5ajho")
+
+[connection signal="area_entered" from="JumpThruPlatform" to="." method="_on_area_2d_area_entered"]
+[connection signal="area_exited" from="JumpThruPlatform" to="." method="_on_area_2d_area_exited"]

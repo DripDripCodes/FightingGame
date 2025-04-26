@@ -12,6 +12,7 @@ speed = 100
 gravity = 450
 jump_force = -500
 air_resist = 0.4
+player_value = null
 
 [node name="CollisionShape" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_6jilj")

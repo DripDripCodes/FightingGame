@@ -22,6 +22,7 @@ var hitbox = preload("res://hitbox.tscn")
 var left_button = ""
 var right_button = ""
 var jump_button = ""
+var down_button= ""
 var light_attack = ""
 func _ready():
 	add_to_group("Fighter")
@@ -30,11 +31,14 @@ func _ready():
 			left_button = "a"
 			right_button = "d"
 			jump_button = "w"
+			down_button = "s"
 			light_attack = "j"
 		2:
 			left_button = "ui_left"
 			right_button = "ui_right"
 			jump_button = "ui_up"
+			down_button = "ui_down"
+			light_attack = "z"
 
 func _physics_process(delta):
 	if is_on_floor():
@@ -49,6 +53,8 @@ func _physics_process(delta):
 		else:
 			right = 0
 		velocity.x = (right-left) * speed
+		if Input.is_action_pressed(down_button):
+			self.set_collision_mask_value(3,false)
 	else:
 
 		if Input.is_action_pressed(left_button) and velocity.x > -speed/2:
@@ -95,6 +101,7 @@ func platformCalc(area):
 		self.set_collision_mask_value(3,false)
 	if area.name == "JumpThruPlatform" and velocity.y >= 40:
 		self.set_collision_mask_value(3,true)
+	
 
 func knockBackCalculations(area):
 	if area.is_in_group("Hitbox") and area.creator != self: 

@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://b4a6dfjm7tc10"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_73ykw"]
+
+[node name="DeathBox" type="Node2D"]
+
+[node name="Area2D" type="Area2D" parent="." groups=["DeathBox"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("RectangleShape2D_73ykw")
+debug_color = Color(0.983024, 0, 0.356858, 0.42)

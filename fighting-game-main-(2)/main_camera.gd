@@ -3,7 +3,6 @@ extends Camera2D
 @onready var avg_y = 0
 @onready var avg_x = 0
 func _ready():
-	
 	zoom = Vector2(2,2)
 func _physics_process(delta):
 	var player_arr = get_tree().get_nodes_in_group("Fighter")

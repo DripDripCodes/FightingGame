@@ -28,14 +28,15 @@ text = "start"
 script = ExtResource("1_06t4h")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="."]
-offset_left = -55.0
-offset_top = -277.0
-offset_right = 101.0
-offset_bottom = -178.0
+offset_left = -93.0
+offset_top = -276.0
+offset_right = 128.0
+offset_bottom = -177.0
 pivot_offset = Vector2(102, 36)
 theme_override_font_sizes/normal_font_size = 20
 text = "Worldcry
-version 0.0.02"
+version 0.0.03
+now with grabs!"
 tab_size = 5
 
 [connection signal="button_down" from="Camera2D/ColorRect/Button" to="." method="_on_button_button_down"]

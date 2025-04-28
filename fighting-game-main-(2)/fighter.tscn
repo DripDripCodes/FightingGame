@@ -4,15 +4,14 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6jilj"]
 
-[node name="Lokilani" type="CharacterBody2D"]
+[node name="Lokilani" type="CharacterBody2D" groups=["Fighter"]]
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_efvb3")
 speed = 100
-gravity = 450
-jump_force = -500
-air_resist = 0.4
-player_value = null
+gravity = 200
+jump_force = -300
+air_resist = 3.0
 
 [node name="CollisionShape" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_6jilj")

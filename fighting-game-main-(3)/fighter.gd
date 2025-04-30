@@ -8,6 +8,7 @@ class_name Fighter
 @export var jump_force: int
 @export var air_resist: float
 @export var air_speed : int
+@export var dodge_distance: int 
 @export var player_value: int
 @export var creatorArea: int
 
@@ -29,14 +30,17 @@ var left_button = ""
 var right_button = ""
 var jump_button = ""
 var down_button = ""
+var up_button = ""
 var light_attack = ""
 var med_attack= ""
 var grab = ""
+var dodge = ""
 
 #inate values
 var current_damage = 0
 var current_stocks = 3 
 var dj = true
+var air_dodge = true
 var cooldown = 0
 var lagframes = 0
 var frameTimer = 0 
@@ -47,24 +51,13 @@ var grabee = 0
 var grabber = 0
 var thrown = false
 
+#dodging
+var dodging = false
+
+
 func _ready():
 	add_to_group("Fighter")
-	match player_value:
-		1:
-			left_button = "a"
-			right_button = "d"
-			jump_button = "w"
-			down_button = "s"
-			light_attack = "j"
-			med_attack= "k"
-			grab = "h"
-		2:
-			left_button = "ui_left"
-			right_button = "ui_right"
-			jump_button = "ui_up"
-			down_button = "ui_down"
-			light_attack = "z"
-			grab = "v"
+	Main.set_controls(player_value,self)
 func _physics_process(delta):
 	#timers
 	if cooldown > 0:
@@ -73,65 +66,73 @@ func _physics_process(delta):
 		lagframes -=1
 	if frameTimer > 0 :
 		frameTimer -= 1
-	if not grabbing and not grabbed:
-		if is_on_floor():
-			dj = true
-
-			if cooldown <= 0  and lagframes <= 0:
-				if Input.is_action_pressed(down_button):
-					self.set_collision_mask_value(3,false)
-				if Input.is_action_pressed(left_button):
-					left  = 1
-					facing = -1
-				
-				else:
-					left = 0
-				if Input.is_action_pressed(right_button): 
-					right  = 1
-					facing = 1
-				else:
-					right = 0
-			if lagframes <= 0 and cooldown <=0:
-				velocity.x = (right-left) * speed * delta *100
-			else:
-				velocity.x = 0
-		else:
-			if cooldown <= 0 and lagframes <= 0 :
-				if Input.is_action_pressed(left_button) and velocity.x > -speed/2:
-					left +=.1
-					velocity.x-= .1 * air_speed/2
-				if Input.is_action_pressed(right_button) and velocity.x < speed/2 : 
-					velocity.x += .1 *air_speed/2
-				if Input.is_action_pressed(down_button): 
-					velocity.y += 5
-				if velocity.x > 0:
-					velocity.x -= air_resist
-				if velocity.x < 0:
-					velocity.x += air_resist
-				var face = 0
-				
-				if facing:
-					face = -1
-				else:
-					face = 1
-				if Input.is_action_just_pressed(jump_button) and dj:
-					velocity.y = jump_force
+	if dodging:
+		move_and_slide()
+		
+	if not dodging:
+		if not grabbing and not grabbed:
+			if is_on_floor():
+				#dodging
+				air_dodge = true
+				dj = true
+				if cooldown <= 0  and lagframes <= 0:
+					floor_dodge()
+					if Input.is_action_pressed(down_button):
+						self.set_collision_mask_value(3,false)
 					if Input.is_action_pressed(left_button):
 						left  = 1
+						facing = -1
+					
 					else:
 						left = 0
 					if Input.is_action_pressed(right_button): 
 						right  = 1
-					
+						facing = 1
 					else:
 						right = 0
-					velocity.x = (right-left) * speed * delta *100
-					dj = false
-			velocity.y += gravity * delta  * 5
-		move_and_slide()
-		if cooldown <= 0 and lagframes <= 0:
-			if Input.is_action_just_pressed(jump_button) and is_on_floor():
-				velocity.y = jump_force
+				if not dodging:
+					if lagframes <= 0 and cooldown <=0:
+						velocity.x = (right-left) * speed * delta *100
+					else:
+						velocity.x = 0
+			else:
+				if cooldown <= 0 and lagframes <= 0 :
+					inair_dodge()
+					if Input.is_action_pressed(left_button) and velocity.x > -speed/2:
+						left +=.1
+						velocity.x-= .1 * air_speed/2
+					if Input.is_action_pressed(right_button) and velocity.x < speed/2 : 
+						velocity.x += .1 *air_speed/2
+					if Input.is_action_pressed(down_button): 
+						velocity.y += 5
+					if velocity.x > 0:
+						velocity.x -= air_resist
+					if velocity.x < 0:
+						velocity.x += air_resist
+					var face = 0
+					
+					if facing:
+						face = -1
+					else:
+						face = 1
+					if Input.is_action_just_pressed(jump_button) and dj:
+						velocity.y = jump_force
+						if Input.is_action_pressed(left_button):
+							left  = 1
+						else:
+							left = 0
+						if Input.is_action_pressed(right_button): 
+							right  = 1
+						
+						else:
+							right = 0
+						velocity.x = (right-left) * speed * delta *100
+						dj = false
+				velocity.y += gravity * delta  * 5
+			move_and_slide()
+			if cooldown <= 0 and lagframes <= 0:
+				if Input.is_action_just_pressed(jump_button) and is_on_floor():
+					velocity.y = jump_force
 
 	if grabbed:
 
@@ -187,10 +188,11 @@ func createGrabBox(x_pos,y_pos,x_size,y_size,deathframes,timer):
 	add_child(newHBox)
 
 func platformCalc(area):
-	if area.name == "JumpThruPlatform" and velocity.y < 40:
-		self.set_collision_mask_value(3,false)
-	if area.name == "JumpThruPlatform" and velocity.y >= 40:
-		self.set_collision_mask_value(3,true)
+	if not dodging:
+		if area.name == "JumpThruPlatform" and velocity.y < 40:
+			self.set_collision_mask_value(3,false)
+		if area.name == "JumpThruPlatform" and velocity.y >= 40:
+			self.set_collision_mask_value(3,true)
 
 func knockBackCalculations(area):
 	if area.is_in_group("Hitbox") and area.creator != self: 
@@ -215,8 +217,43 @@ func checkDeath():
 		Main.playerdead[player_value] = true
 		queue_free()
 func grabBoxCheck(area):
+
 	if area.is_in_group("GrabBox") and area.creator != self:
 		pass
 #from GBWD on the Godot forums
 func wait(seconds: float) -> void:
 	await get_tree().create_timer(seconds).timeout
+
+func floor_dodge():
+	if Input.is_action_just_pressed(dodge):
+		if Input.is_action_pressed(down_button):
+			velocity.y += dodge_distance
+		if Input.is_action_pressed(jump_button) or Input.is_action_pressed(up_button):
+			velocity.y += -dodge_distance
+		if Input.is_action_pressed(left_button):
+			velocity.x += -dodge_distance
+		if Input.is_action_pressed(right_button):
+			velocity.x += dodge_distance
+		dodging = true
+		self.set_collision_mask_value(3,false)
+		await(wait(.08))
+		dodging = false
+		velocity = Vector2(0,0)
+		self.set_collision_mask_value(3,true)
+func inair_dodge():
+		if Input.is_action_just_pressed(dodge) and air_dodge == true:
+				if Input.is_action_pressed(down_button):
+					velocity.y += dodge_distance
+				if Input.is_action_pressed(jump_button) or Input.is_action_pressed(up_button):
+					velocity.y += -dodge_distance
+				if Input.is_action_pressed(left_button):
+					velocity.x += -dodge_distance
+				if Input.is_action_pressed(right_button):
+					velocity.x += dodge_distance
+				dodging = true
+				air_dodge = false
+				self.set_collision_mask_value(3,false)
+				await(wait(.08))
+				dodging = false
+				self.set_collision_mask_value(3,true)
+				velocity = Vector2(0,0)

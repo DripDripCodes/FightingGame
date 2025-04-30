@@ -13,6 +13,7 @@ gravity = 200
 jump_force = -300
 air_resist = 3.0
 air_speed = 200
+dodge_distance = 500
 creatorArea = 20
 
 [node name="CollisionShape" type="CollisionShape2D" parent="."]

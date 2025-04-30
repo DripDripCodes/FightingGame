@@ -3,6 +3,7 @@ extends Node2D
 
 
 func _ready():
+	Main.controllers = Input.get_connected_joypads()
 	var spawns = get_tree().get_nodes_in_group("Spawner")
 	Main.player1 = Main.fighter.instantiate()
 	Main.player2 = Main.fighter.instantiate()

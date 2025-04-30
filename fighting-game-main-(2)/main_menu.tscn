@@ -9,29 +9,31 @@ script = ExtResource("1_7vrkn")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 
-[node name="ColorRect" type="ColorRect" parent="Camera2D"]
-offset_left = -608.0
+[node name="ColorRect" type="ColorRect" parent="."]
+offset_left = -744.0
 offset_top = -375.0
-offset_right = -568.0
-offset_bottom = -335.0
+offset_right = -695.0
+offset_bottom = -330.0
 scale = Vector2(29.9758, 17.4765)
 color = Color(0, 0, 0, 1)
 
-[node name="Button" type="Button" parent="Camera2D/ColorRect"]
+[node name="Button" type="Button" parent="ColorRect"]
 layout_mode = 0
-offset_left = 17.1805
-offset_top = 17.6809
-offset_right = 62.1805
-offset_bottom = 48.6809
+offset_left = 22.3847
+offset_top = 18.9969
+offset_right = 67.3847
+offset_bottom = 49.9969
 scale = Vector2(0.137972, 0.194345)
 text = "start"
 script = ExtResource("1_06t4h")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="."]
-offset_left = -93.0
-offset_top = -276.0
-offset_right = 128.0
-offset_bottom = -177.0
+[node name="RichTextLabel" type="RichTextLabel" parent="ColorRect"]
+layout_mode = 0
+offset_left = -77.0
+offset_top = -24.0
+offset_right = 112.0
+offset_bottom = 80.0
+scale = Vector2(0.0525691, 0.0913512)
 pivot_offset = Vector2(102, 36)
 theme_override_font_sizes/normal_font_size = 20
 text = "Worldcry
@@ -39,4 +41,4 @@ version 0.0.03
 now with grabs!"
 tab_size = 5
 
-[connection signal="button_down" from="Camera2D/ColorRect/Button" to="." method="_on_button_button_down"]
+[connection signal="button_down" from="ColorRect/Button" to="." method="_on_button_button_down"]

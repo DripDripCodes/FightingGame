@@ -7,7 +7,9 @@ class_name Fighter
 @export var gravity: int
 @export var jump_force: int
 @export var air_resist: float
+@export var air_speed : int
 @export var player_value: int
+@export var creatorArea: int
 
 #directional inputs
 var right = 0
@@ -28,17 +30,22 @@ var right_button = ""
 var jump_button = ""
 var down_button = ""
 var light_attack = ""
-
+var med_attack= ""
 var grab = ""
+
 #inate values
 var current_damage = 0
-var current_stocks = 3
-
+var current_stocks = 3 
+var dj = true
+var cooldown = 0
+var lagframes = 0
+var frameTimer = 0 
 #grabs
 var grabbing = false
 var grabbed = false
 var grabee = 0
 var grabber = 0
+var thrown = false
 
 func _ready():
 	add_to_group("Fighter")
@@ -49,6 +56,7 @@ func _ready():
 			jump_button = "w"
 			down_button = "s"
 			light_attack = "j"
+			med_attack= "k"
 			grab = "h"
 		2:
 			left_button = "ui_left"
@@ -56,57 +64,97 @@ func _ready():
 			jump_button = "ui_up"
 			down_button = "ui_down"
 			light_attack = "z"
+			grab = "v"
 func _physics_process(delta):
+	#timers
+	if cooldown > 0:
+		cooldown -=3
+	if lagframes > 0:
+		lagframes -=1
+	if frameTimer > 0 :
+		frameTimer -= 1
 	if not grabbing and not grabbed:
 		if is_on_floor():
-			if Input.is_action_pressed(down_button):
-				self.set_collision_mask_value(3,false)
-			if Input.is_action_pressed(left_button):
-				left  = 1
-				facing = -1
+			dj = true
+
+			if cooldown <= 0  and lagframes <= 0:
+				if Input.is_action_pressed(down_button):
+					self.set_collision_mask_value(3,false)
+				if Input.is_action_pressed(left_button):
+					left  = 1
+					facing = -1
+				
+				else:
+					left = 0
+				if Input.is_action_pressed(right_button): 
+					right  = 1
+					facing = 1
+				else:
+					right = 0
+			if lagframes <= 0 and cooldown <=0:
+				velocity.x = (right-left) * speed * delta *100
 			else:
-				left = 0
-			if Input.is_action_pressed(right_button): 
-				right  = 1
-				facing = 1
-			else:
-				right = 0
-			velocity.x = (right-left) * speed * delta *100
+				velocity.x = 0
 		else:
-			if Input.is_action_pressed(left_button) and velocity.x > -speed/2:
-				left +=.1
-				velocity.x-= .1 * speed/2
-			if Input.is_action_pressed(right_button) and velocity.x < speed/2 : 
-				velocity.x += .1 *speed/2
-			if velocity.x > 0:
-				velocity.x -= air_resist
-			if velocity.x < 0:
-				velocity.x += air_resist
-			var face = 0
+			if cooldown <= 0 and lagframes <= 0 :
+				if Input.is_action_pressed(left_button) and velocity.x > -speed/2:
+					left +=.1
+					velocity.x-= .1 * air_speed/2
+				if Input.is_action_pressed(right_button) and velocity.x < speed/2 : 
+					velocity.x += .1 *air_speed/2
+				if Input.is_action_pressed(down_button): 
+					velocity.y += 5
+				if velocity.x > 0:
+					velocity.x -= air_resist
+				if velocity.x < 0:
+					velocity.x += air_resist
+				var face = 0
+				
+				if facing:
+					face = -1
+				else:
+					face = 1
+				if Input.is_action_just_pressed(jump_button) and dj:
+					velocity.y = jump_force
+					if Input.is_action_pressed(left_button):
+						left  = 1
+					else:
+						left = 0
+					if Input.is_action_pressed(right_button): 
+						right  = 1
+					
+					else:
+						right = 0
+					velocity.x = (right-left) * speed * delta *100
+					dj = false
 			velocity.y += gravity * delta  * 5
-			if facing:
-				face = -1
-			else:
-				face = 1
 		move_and_slide()
-		if Input.is_action_just_pressed(jump_button) and is_on_floor():
-			velocity.y = jump_force
+		if cooldown <= 0 and lagframes <= 0:
+			if Input.is_action_just_pressed(jump_button) and is_on_floor():
+				velocity.y = jump_force
+
 	if grabbed:
-		print(Main.grab_timer[grabee][grabber])
+
 		if Input.is_action_just_pressed(left_button) or \
 			Input.is_action_just_pressed(right_button) or\
 			Input.is_action_just_pressed(jump_button) or\
 			Input.is_action_just_pressed(down_button): 
 				Main.grab_timer[grabee][grabber] -= 10
 				
-	if Main.grab_timer[grabee][grabber] <=  0:
+	if Main.grab_timer[grabee][grabber] <=  0 and not thrown:
+	
+		if Main.last_gt[grabee][grabber] == 1 and grabee == player_value:
+			velocity.y = .5 * 100 * -1 * 25* .1+(current_damage/100)
+			velocity.x = .5 * 100 * (-1*facing) * 25* .1+(current_damage/100)
+			move_and_slide()
+			Main.last_gt[grabee][grabber] = 0
 		grabbed = false
 		grabbing = false
 	checkDeath()
-func createHitbox(x_pos,y_pos,x_size,y_size,deathframes,damage,knockback,knockback_x):
+func createHitbox(x_pos,y_pos,x_size,y_size,deathframes,damage,knockback,knockback_x,stuntime):
 	##Positions
 	if facing == -1:
-		x_pos = -1*x_pos-20
+		x_pos = -1*(x_pos+creatorArea-(creatorArea-x_size))
 	var newHBox = hitbox.instantiate()
 	##Hitbox Values
 	newHBox.scale = Vector2(x_size,y_size)
@@ -119,11 +167,13 @@ func createHitbox(x_pos,y_pos,x_size,y_size,deathframes,damage,knockback,knockba
 	newHBox.kby = 1-knockback_x
 	newHBox.facing = self.facing
 	newHBox.damage = damage
+	newHBox.stunTime = stuntime
+	newHBox.creatorArea = creatorArea
 	add_child(newHBox)
 
 func createGrabBox(x_pos,y_pos,x_size,y_size,deathframes,timer):
 	if facing == -1:
-		x_pos = -1*x_pos-20
+		x_pos = -1*(x_pos+creatorArea-(creatorArea-x_size))
 	var newHBox = grabbox.instantiate()
 	##Hitbox Values
 	newHBox.scale = Vector2(x_size,y_size)
@@ -133,6 +183,7 @@ func createGrabBox(x_pos,y_pos,x_size,y_size,deathframes,timer):
 	newHBox.x_pos = x_pos
 	newHBox.facing = self.facing 
 	newHBox.damage = timer
+	newHBox.creatorArea = creatorArea
 	add_child(newHBox)
 
 func platformCalc(area):
@@ -149,7 +200,8 @@ func knockBackCalculations(area):
 			print(current_damage)
 			velocity.y = area.kby * area.knockback * gravity * -1 * current_damage/100
 			velocity.x = area.kbx * area.knockback * (area.facing) * 25* current_damage/100
-		
+			self.cooldown = area.stunTime
+
 			move_and_slide()
 
 func deathBoxCheck(area):
@@ -157,6 +209,7 @@ func deathBoxCheck(area):
 		current_stocks -= 1
 		current_damage = 0 
 		position = Vector2(0,-100)
+		velocity = Vector2(0,0)
 func checkDeath():
 	if current_stocks <= 0: 
 		Main.playerdead[player_value] = true

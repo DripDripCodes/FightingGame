@@ -1,28 +1,51 @@
-[gd_scene load_steps=3 format=3 uid="uid://c0800bxk60fm1"]
+[gd_scene load_steps=5 format=3 uid="uid://c0800bxk60fm1"]
 
 [ext_resource type="Script" uid="uid://c8lsviccw12tg" path="res://lokilani.gd" id="1_efvb3"]
+[ext_resource type="Texture2D" uid="uid://c4jgqxmw8o7ad" path="res://lokilani_test_batch2.png" id="2_umvcx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6jilj"]
+size = Vector2(32, 51)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_qq641"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_umvcx")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
 
 [node name="Lokilani" type="CharacterBody2D" groups=["Fighter"]]
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_efvb3")
-speed = 100
+speed = 130
 gravity = 200
 jump_force = -300
 air_resist = 3.0
 air_speed = 200
-dodge_distance = 500
+dodge_distance = 400
 creatorArea = 20
-
-[node name="CollisionShape" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_6jilj")
 
 [node name="Area2D" type="Area2D" parent="."]
 visible = false
+position = Vector2(0, -0.5)
+scale = Vector2(0.64295, 0.64295)
 
 [node name="CollisionShape" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_6jilj")
+
+[node name="CollisionShape" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(0, -0.5)
+scale = Vector2(0.64295, 0.64295)
+shape = SubResource("RectangleShape2D_6jilj")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(1.19209e-07, 0)
+scale = Vector2(0.64295, 0.650987)
+sprite_frames = SubResource("SpriteFrames_qq641")
 
 [connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

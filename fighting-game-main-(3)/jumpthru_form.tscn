@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://mulw0q0156vw" path="res://jumpthru_form.gd" id="1_qwwim"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5ajho"]
+size = Vector2(15.826, 5.42168)
 
 [node name="jumpthru_form" type="StaticBody2D"]
 collision_layer = 4
@@ -15,6 +16,7 @@ shape = SubResource("RectangleShape2D_5ajho")
 scale = Vector2(1.13737, 2.76667)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="JumpThruPlatform"]
+position = Vector2(0, 1.26506)
 shape = SubResource("RectangleShape2D_5ajho")
 
 [connection signal="area_entered" from="JumpThruPlatform" to="." method="_on_area_2d_area_entered"]

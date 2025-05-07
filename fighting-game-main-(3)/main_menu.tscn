@@ -1,6 +1,5 @@
-[gd_scene load_steps=3 format=3 uid="uid://3beeu3g282mr"]
+[gd_scene load_steps=2 format=3 uid="uid://3beeu3g282mr"]
 
-[ext_resource type="Script" uid="uid://r0vg2woylrpc" path="res://button.gd" id="1_06t4h"]
 [ext_resource type="Script" uid="uid://bef2uyg0nnfwd" path="res://main_menu.gd" id="1_7vrkn"]
 
 [node name="Node2D" type="Node2D"]
@@ -25,14 +24,20 @@ offset_right = 67.3847
 offset_bottom = 49.9969
 scale = Vector2(0.137972, 0.194345)
 text = "start"
-script = ExtResource("1_06t4h")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="ColorRect"]
-layout_mode = 0
-offset_left = -77.0
-offset_top = -24.0
-offset_right = 112.0
-offset_bottom = 80.0
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.228
+offset_top = -47.3906
+offset_right = 88.7722
+offset_bottom = 56.6094
+grow_horizontal = 2
+grow_vertical = 2
 scale = Vector2(0.0525691, 0.0913512)
 pivot_offset = Vector2(102, 36)
 theme_override_font_sizes/normal_font_size = 20

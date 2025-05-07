@@ -68,7 +68,7 @@ func _physics_process(delta):
 		frameTimer -= 1
 	if dodging:
 		move_and_slide()
-		
+	
 	if not dodging:
 		if not grabbing and not grabbed:
 			if is_on_floor():
@@ -82,7 +82,6 @@ func _physics_process(delta):
 					if Input.is_action_pressed(left_button):
 						left  = 1
 						facing = -1
-					
 					else:
 						left = 0
 					if Input.is_action_pressed(right_button): 
@@ -189,9 +188,9 @@ func createGrabBox(x_pos,y_pos,x_size,y_size,deathframes,timer):
 
 func platformCalc(area):
 	if not dodging:
-		if area.name == "JumpThruPlatform" and velocity.y < 40:
+		if area.name == "JumpThruPlatform" and velocity.y < 0:
 			self.set_collision_mask_value(3,false)
-		if area.name == "JumpThruPlatform" and velocity.y >= 40:
+		if area.name == "JumpThruPlatform" and velocity.y >= 0:
 			self.set_collision_mask_value(3,true)
 
 func knockBackCalculations(area):
@@ -217,9 +216,8 @@ func checkDeath():
 		Main.playerdead[player_value] = true
 		queue_free()
 func grabBoxCheck(area):
-
 	if area.is_in_group("GrabBox") and area.creator != self:
-		pass
+		facing = -1 * area.facing
 #from GBWD on the Godot forums
 func wait(seconds: float) -> void:
 	await get_tree().create_timer(seconds).timeout
@@ -237,9 +235,10 @@ func floor_dodge():
 		dodging = true
 		self.set_collision_mask_value(3,false)
 		await(wait(.08))
-		dodging = false
 		velocity = Vector2(0,0)
+		lagframes = 10
 		self.set_collision_mask_value(3,true)
+		dodging = false
 func inair_dodge():
 		if Input.is_action_just_pressed(dodge) and air_dodge == true:
 				if Input.is_action_pressed(down_button):

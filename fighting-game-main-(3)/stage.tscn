@@ -52,18 +52,14 @@ visible = false
 position = Vector2(139, -31)
 
 [node name="Player_Spawn3" type="Node2D" parent="." groups=["Spawner"]]
-position = Vector2(-60, -29)
+position = Vector2(-60, -27)
 
 [node name="Player_Spawn4" type="Node2D" parent="." groups=["Spawner"]]
-position = Vector2(55, -30)
+position = Vector2(55, -29)
 
 [node name="jumpthru_form" parent="." instance=ExtResource("4_gx6sy")]
-position = Vector2(-113, -42)
-scale = Vector2(3.48, 0.28)
-
-[node name="jumpthru_form2" parent="." instance=ExtResource("4_gx6sy")]
-position = Vector2(112, -42)
-scale = Vector2(3.48, 0.28)
+position = Vector2(-106, -50)
+scale = Vector2(5.31398, 0.48)
 
 [node name="DeathBox" parent="." instance=ExtResource("6_vpggq")]
 position = Vector2(8, 326)
@@ -80,3 +76,11 @@ scale = Vector2(1, 36.4642)
 [node name="DeathBox4" parent="." instance=ExtResource("6_vpggq")]
 position = Vector2(-544, 6)
 scale = Vector2(1, 36.4242)
+
+[node name="jumpthru_form3" parent="." instance=ExtResource("4_gx6sy")]
+position = Vector2(-1.19209e-07, -88)
+scale = Vector2(-4.40519, 0.374522)
+
+[node name="jumpthru_form2" parent="." instance=ExtResource("4_gx6sy")]
+position = Vector2(108, -50)
+scale = Vector2(5.31398, 0.48)

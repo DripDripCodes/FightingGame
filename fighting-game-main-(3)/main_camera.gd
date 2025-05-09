@@ -22,8 +22,9 @@ func _physics_process(delta):
 		for y in players:
 			if x!=y:
 				zoom_set(x.position.distance_to(y.position))
-	avg_y /= player_arr.size()
-	avg_x /= player_arr.size()
+	if player_arr.size() > 0:
+		avg_y /= player_arr.size()
+		avg_x /= player_arr.size()
 	if abs(avg_y-50 - position.y) > 25:
 		position.y = avg_y-50
 	position.x = avg_x

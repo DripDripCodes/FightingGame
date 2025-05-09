@@ -1,19 +1,25 @@
 extends Node2D
 
-@onready var active_players = 2
+@onready var active_players = 2 
+@onready var player_spawner = [null,null,null,null]
 func _ready():
+	active_players = Main.player.size() - Main.player.count(null)
+	print(active_players)
 	Main.controllers = Input.get_connected_joypads()
 	var spawns = get_tree().get_nodes_in_group("Spawner")
-	for x in range(0,3):
-		Main.player[x] = Main.fighter.instantiate()
-		Main.player[x].player_value = x+1
-		Main.player[x].position = spawns[x].position
-	
-	for x in range(0,active_players):
-		Main.playerdead[x+1] = false
-		Main.player[x].current_damage = 0
-		Main.player[x].current_stocks = Main.stocks
-		add_child(Main.player[x])
+	for x in range(0,Main.maxplayers-1):
+		if Main.player[x] != null:
+			player_spawner[x] = Main.player[x].instantiate()
+			player_spawner[x].player_value = x+1
+			player_spawner[x].position = spawns[x].position
+		else:
+			active_players+=1
+	for x in range(0,Main.maxplayers-1):
+		if Main.player[x] != null and player_spawner[x] != null:
+			Main.playerdead[x+1] = false
+			player_spawner[x].current_damage = 0
+			player_spawner[x].current_stocks = Main.stocks
+			add_child(player_spawner[x])
 	#add_child(Main.player3)
 	#add_child(Main.player4)
 func _process(delta):

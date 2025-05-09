@@ -7,13 +7,11 @@ var deltaG = 0
 var duplicates = 0
 func _ready():
 	super()
-	creatorArea = 20
 	for x in get_parent().get_children():
 		if x.scene_file_path == self.scene_file_path:
 			duplicates +=1
 func _process(delta):
 	#bunk code
-
 	$AnimatedSprite2D.scale.x = facing/1.6
 		
 	#end bunk code
@@ -21,7 +19,6 @@ func _process(delta):
 	if dodging:
 		$AnimatedSprite2D.modulate = Color(10,10,10,10)
 	else:
-		$AnimatedSprite2D.modulate = Color(1,1,1)
 		paletteSwap(duplicates)
 	#check if actionable
 	if not grabbing and not grabbed and cooldown <=  0 and lagframes <=0 and not dodging:
@@ -72,5 +69,5 @@ func _on_area_2d_area_entered(area):
 		knockBackCalculations(area)
 
 func frames_to_seconds(frames):
-
+	print(frames * deltaG)
 	return frames * deltaG

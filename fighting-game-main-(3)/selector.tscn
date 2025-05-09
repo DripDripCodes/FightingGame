@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://dmypppy23dunc"]
+
+[ext_resource type="Script" uid="uid://cwf3kh7ry0p85" path="res://selector.gd" id="1_2m6kw"]
+
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_5wqjp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2m6kw"]
+size = Vector2(6, 6)
+
+[node name="Node2D" type="Node2D"]
+z_index = 2
+script = ExtResource("1_2m6kw")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(5, 5)
+texture = SubResource("PlaceholderTexture2D_5wqjp")
+
+[node name="Area2D" type="Area2D" parent="Sprite2D"]
+visible = false
+scale = Vector2(0.2, 0.2)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/Area2D"]
+position = Vector2(-2.38419e-07, 0)
+shape = SubResource("RectangleShape2D_2m6kw")
+
+[connection signal="area_entered" from="Sprite2D/Area2D" to="." method="_on_area_2d_area_entered"]
+[connection signal="area_exited" from="Sprite2D/Area2D" to="." method="_on_area_2d_area_exited"]

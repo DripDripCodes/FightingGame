@@ -1,0 +1,66 @@
+[gd_scene load_steps=7 format=3 uid="uid://d26ctm4pxtxkb"]
+
+[ext_resource type="Script" uid="uid://bpa24hhcpfq6i" path="res://gofoe.gd" id="1_dj210"]
+[ext_resource type="Texture2D" uid="uid://c4jgqxmw8o7ad" path="res://lokilani_test_batch2.png" id="2_dj210"]
+[ext_resource type="Texture2D" uid="uid://bnhpj12xajbo6" path="res://Gofoe_Koi.png" id="3_dj210"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dj210"]
+size = Vector2(21, 10)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x28c1"]
+size = Vector2(21, 10)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_qq641"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_dj210")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_dj210")
+}],
+"loop": true,
+"name": &"new_animation",
+"speed": 5.0
+}]
+
+[node name="Gofoe" type="CharacterBody2D" groups=["Fighter"]]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_dj210")
+speed = 130
+gravity = 200
+jump_force = -300
+air_resist = 3.0
+air_speed = 200
+dodge_distance = 400
+creatorArea = 20
+
+[node name="Area2D" type="Area2D" parent="."]
+visible = false
+position = Vector2(0, -0.5)
+scale = Vector2(0.64295, 0.64295)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+visible = false
+position = Vector2(-0.777665, 0.777665)
+scale = Vector2(1.55533, 1.55533)
+shape = SubResource("RectangleShape2D_dj210")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(-0.5, 0)
+shape = SubResource("RectangleShape2D_x28c1")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -7)
+scale = Vector2(0.64295, 0.650987)
+sprite_frames = SubResource("SpriteFrames_qq641")
+animation = &"new_animation"
+
+[connection signal="area_entered" from="Area2D" to="." method="_on_area_2d_area_entered"]

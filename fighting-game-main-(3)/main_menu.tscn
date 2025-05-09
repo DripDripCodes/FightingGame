@@ -32,18 +32,18 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -100.228
-offset_top = -47.3906
-offset_right = 88.7722
-offset_bottom = 56.6094
+offset_left = -103.197
+offset_top = -47.2189
+offset_right = 184.803
+offset_bottom = 56.7811
 grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.0525691, 0.0913512)
 pivot_offset = Vector2(102, 36)
 theme_override_font_sizes/normal_font_size = 20
 text = "Worldcry
-version 0.0.03
-now with grabs!"
+version 0.0.1
+Minimum Viable Product!"
 tab_size = 5
 
 [connection signal="button_down" from="ColorRect/Button" to="." method="_on_button_button_down"]

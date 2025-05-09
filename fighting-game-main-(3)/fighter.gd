@@ -1,6 +1,7 @@
 extends CharacterBody2D
 class_name Fighter
 
+#name
 
 #movement variables
 @export var speed: int
@@ -17,7 +18,7 @@ var right = 0
 var left = 0
 var jump = 0 
 var facing = 1 #1 right -1 left
-
+var tap_jump= true
 
 #timers
 var kbtimer = 0
@@ -57,7 +58,7 @@ var dodging = false
 
 func _ready():
 	add_to_group("Fighter")
-	Main.set_controls(player_value,self)
+	set_controls()
 func _physics_process(delta):
 	#timers
 	if cooldown > 0:
@@ -114,7 +115,7 @@ func _physics_process(delta):
 						face = -1
 					else:
 						face = 1
-					if Input.is_action_just_pressed(jump_button) and dj:
+					if jumpFunc() and dj:
 						velocity.y = jump_force
 						if Input.is_action_pressed(left_button):
 							left  = 1
@@ -130,7 +131,7 @@ func _physics_process(delta):
 				velocity.y += gravity * delta  * 5
 			move_and_slide()
 			if cooldown <= 0 and lagframes <= 0:
-				if Input.is_action_just_pressed(jump_button) and is_on_floor():
+				if jumpFunc() and is_on_floor():
 					velocity.y = jump_force
 
 	if grabbed:
@@ -138,6 +139,7 @@ func _physics_process(delta):
 		if Input.is_action_just_pressed(left_button) or \
 			Input.is_action_just_pressed(right_button) or\
 			Input.is_action_just_pressed(jump_button) or\
+			Input.is_action_just_pressed(up_button) or\
 			Input.is_action_just_pressed(down_button): 
 				Main.grab_timer[grabee][grabber] -= 10
 				
@@ -243,7 +245,7 @@ func inair_dodge():
 		if Input.is_action_just_pressed(dodge) and air_dodge == true:
 				if Input.is_action_pressed(down_button):
 					velocity.y += dodge_distance
-				if Input.is_action_pressed(jump_button) or Input.is_action_pressed(up_button):
+				if Input.is_action_pressed(up_button):
 					velocity.y += -dodge_distance
 				if Input.is_action_pressed(left_button):
 					velocity.x += -dodge_distance
@@ -256,3 +258,37 @@ func inair_dodge():
 				dodging = false
 				self.set_collision_mask_value(3,true)
 				velocity = Vector2(0,0)
+
+func jumpFunc():
+	if tap_jump == false:
+		return Input.is_action_just_pressed(jump_button)
+
+	else:
+		return Input.is_action_just_pressed(jump_button) or Input.is_action_just_pressed(up_button)
+
+
+
+func set_controls():
+
+	left_button = Main.player_control[player_value-1][2]
+	right_button = Main.player_control[player_value-1][3]
+	jump_button = Main.player_control[player_value-1][8]
+	down_button = Main.player_control[player_value-1][1]
+	up_button = Main.player_control[player_value-1][0]
+	light_attack = Main.player_control[player_value-1][4]
+	med_attack= Main.player_control[player_value-1][5]
+	grab = Main.player_control[player_value-1][7]
+	dodge = Main.player_control[player_value-1][6]
+
+
+func paletteSwap(duplicates):
+	if duplicates >= 2:
+		match player_value:
+			1:
+				$AnimatedSprite2D.modulate = Color.WHITE
+			2:
+				$AnimatedSprite2D.modulate = Color.AQUA
+			3:
+				$AnimatedSprite2D.modulate = Color.LIGHT_PINK
+	else:
+		$AnimatedSprite2D.modulate = Color.WHITE

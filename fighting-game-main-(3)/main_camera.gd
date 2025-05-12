@@ -6,7 +6,7 @@ extends Camera2D
 var x_store = 0
 var zoom_x ="standard"
 func _ready():
-	zoom = Vector2(2.5,2.5)
+	zoom = Vector2(3,3)
 func _physics_process(delta):
 	#zoom
 	

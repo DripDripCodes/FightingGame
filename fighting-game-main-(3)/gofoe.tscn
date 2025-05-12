@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://d26ctm4pxtxkb"]
 
 [ext_resource type="Script" uid="uid://bpa24hhcpfq6i" path="res://gofoe.gd" id="1_dj210"]
-[ext_resource type="Texture2D" uid="uid://c4jgqxmw8o7ad" path="res://lokilani_test_batch2.png" id="2_dj210"]
+[ext_resource type="Texture2D" uid="uid://c4jgqxmw8o7ad" path="res://Sprites/Lokilani/lokilani_test_batch2.png" id="2_dj210"]
 [ext_resource type="Texture2D" uid="uid://bnhpj12xajbo6" path="res://Gofoe_Koi.png" id="3_dj210"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dj210"]

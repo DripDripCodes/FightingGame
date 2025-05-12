@@ -16,6 +16,7 @@ offset_bottom = 237.0
 color = Color(0.626491, 0.345865, 0.519873, 1)
 
 [node name="CharacterName" type="RichTextLabel" parent="."]
+layout_mode = 0
 offset_left = 18.0
 offset_top = 193.0
 offset_right = 159.0
@@ -24,6 +25,7 @@ text = "TEST"
 horizontal_alignment = 1
 
 [node name="PlayerLabel" type="RichTextLabel" parent="."]
+layout_mode = 0
 offset_left = 144.0
 offset_top = 9.0
 offset_right = 180.0

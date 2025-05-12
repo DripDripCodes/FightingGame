@@ -40,13 +40,13 @@ func _process(delta):
 		
 		
 	if Input.is_action_pressed(controls[0]):
-		position.y -= 3
+		position.y -= Input.get_action_strength(controls[0])*3
 	if Input.is_action_pressed(controls[1]):
-		position.y += 3
+		position.y += Input.get_action_strength(controls[1])*3
 	if Input.is_action_pressed(controls[2]):
-		position.x -= 3
+		position.x -= Input.get_action_strength(controls[2])*3
 	if Input.is_action_pressed(controls[3]):
-		position.x += 3
+		position.x += Input.get_action_strength(controls[3])*3
 	for x in ControllerPresets.enter:
 	
 		if Input.is_action_just_pressed(x) and Main.player[player_value-1] != null and \

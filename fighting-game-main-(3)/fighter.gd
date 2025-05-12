@@ -19,7 +19,8 @@ var left = 0
 var jump = 0 
 var facing = 1 #1 right -1 left
 var tap_jump= true
-
+var move_attack = false
+var air_move = false
 #timers
 var kbtimer = 0
 
@@ -40,7 +41,11 @@ var dodge = ""
 #inate values
 var current_damage = 0
 var current_stocks = 3 
-var dj = true
+var dj = 0
+var fall_thru = 0
+var fast_fall =0   
+
+
 var air_dodge = true
 var cooldown = 0
 var lagframes = 0
@@ -54,48 +59,86 @@ var thrown = false
 
 #dodging
 var dodging = false
+var attack = 0
 
+@onready var sprite = $AnimatedSprite2D
 
 func _ready():
 	add_to_group("Fighter")
 	set_controls()
 func _physics_process(delta):
+	attack-= 1
+	fall_thru -= 1
 	#timers
+	if fast_fall > 0:
+		fast_fall -= 1 
 	if cooldown > 0:
 		cooldown -=3
 	if lagframes > 0:
 		lagframes -=1
+
 	if frameTimer > 0 :
 		frameTimer -= 1
+		
 	if dodging:
 		move_and_slide()
-	
+
 	if not dodging:
 		if not grabbing and not grabbed:
+			
 			if is_on_floor():
 				#dodging
 				air_dodge = true
-				dj = true
+				dj = 2
 				if cooldown <= 0  and lagframes <= 0:
 					floor_dodge()
-					if Input.is_action_pressed(down_button):
-						self.set_collision_mask_value(3,false)
+					if Input.is_action_pressed(down_button) and fall_thru <= 0:
+						fall_thru = 20
+					else:
+						if Input.is_action_just_pressed(down_button) and fall_thru > 0:
+							self.set_collision_mask_value(3,false)
+							fall_thru = 0 
+					
 					if Input.is_action_pressed(left_button):
-						left  = 1
+						if  left < 1:
+							left  += Input.get_action_strength(left_button)/10
+						if left > 1.1:
+							left = 1 
 						facing = -1
 					else:
-						left = 0
-					if Input.is_action_pressed(right_button): 
-						right  = 1
+						if left > 0:
+							left -=.3
+						else:
+							left  = 0
+					if Input.is_action_pressed(right_button):
+						if right < 1:
+							right  += Input.get_action_strength(right_button)/10 
+							
+						if right > 1.1:
+							right = 1
 						facing = 1
 					else:
-						right = 0
+						if right > 0:
+							right -=.3
+						else:
+							right  = 0
+						
 				if not dodging:
 					if lagframes <= 0 and cooldown <=0:
 						velocity.x = (right-left) * speed * delta *100
+						
 					else:
-						velocity.x = 0
+						if not move_attack:
+							velocity.x = 0
 			else:
+				if Input.is_action_pressed(down_button)and fast_fall <=0: 
+					velocity.y += 5
+					fast_fall = 20
+					
+				if Input.is_action_just_pressed(down_button) and fast_fall > 0 and fast_fall < 18: 
+					velocity.y += 100
+					fast_fall = 0
+					fall_thru = 0
 				if cooldown <= 0 and lagframes <= 0 :
 					inair_dodge()
 					if Input.is_action_pressed(left_button) and velocity.x > -speed/2:
@@ -103,8 +146,7 @@ func _physics_process(delta):
 						velocity.x-= .1 * air_speed/2
 					if Input.is_action_pressed(right_button) and velocity.x < speed/2 : 
 						velocity.x += .1 *air_speed/2
-					if Input.is_action_pressed(down_button): 
-						velocity.y += 5
+					
 					if velocity.x > 0:
 						velocity.x -= air_resist
 					if velocity.x < 0:
@@ -115,7 +157,7 @@ func _physics_process(delta):
 						face = -1
 					else:
 						face = 1
-					if jumpFunc() and dj:
+					if jumpFunc() and dj > 0 and air_move == false:
 						velocity.y = jump_force
 						if Input.is_action_pressed(left_button):
 							left  = 1
@@ -127,13 +169,27 @@ func _physics_process(delta):
 						else:
 							right = 0
 						velocity.x = (right-left) * speed * delta *100
-						dj = false
 				velocity.y += gravity * delta  * 5
+
 			move_and_slide()
-			if cooldown <= 0 and lagframes <= 0:
+			if cooldown <= 0 and lagframes <= 0 :
 				if jumpFunc() and is_on_floor():
 					velocity.y = jump_force
-
+					
+					if Input.is_action_pressed(left_button):
+						left  = 1
+					else:
+						left = 0
+					if Input.is_action_pressed(right_button): 
+						right  = 1
+						
+					else:
+						right = 0
+					await(wait(.05))
+					dj-=1	
+		
+	if velocity.y < 0 and not dodging:
+		self.set_collision_mask_value(3,false)
 	if grabbed:
 
 		if Input.is_action_just_pressed(left_button) or \
@@ -190,13 +246,12 @@ func createGrabBox(x_pos,y_pos,x_size,y_size,deathframes,timer):
 
 func platformCalc(area):
 	if not dodging:
-		if area.name == "JumpThruPlatform" and velocity.y < 0:
-			self.set_collision_mask_value(3,false)
-		if area.name == "JumpThruPlatform" and velocity.y >= 0:
+		if area.name == "JumpThruPlatform" and velocity.y >= 0 and abs(position.x-area.global_position.x) < area.get_child(0).shape.size.x+30:
 			self.set_collision_mask_value(3,true)
 
 func knockBackCalculations(area):
-	if area.is_in_group("Hitbox") and area.creator != self: 
+	if area.is_in_group("Hitbox") and area.creator != self and attack < 0: 
+			
 			print_debug("I'm Hit " + str(player_value))
 			area.queue_free()
 			current_damage+= area.damage
@@ -242,6 +297,7 @@ func floor_dodge():
 		self.set_collision_mask_value(3,true)
 		dodging = false
 func inair_dodge():
+	if not air_move:
 		if Input.is_action_just_pressed(dodge) and air_dodge == true:
 				if Input.is_action_pressed(down_button):
 					velocity.y += dodge_distance
@@ -260,12 +316,13 @@ func inair_dodge():
 				velocity = Vector2(0,0)
 
 func jumpFunc():
+	
 	if tap_jump == false:
 		return Input.is_action_just_pressed(jump_button)
 
 	else:
 		return Input.is_action_just_pressed(jump_button) or Input.is_action_just_pressed(up_button)
-
+	
 
 
 func set_controls():

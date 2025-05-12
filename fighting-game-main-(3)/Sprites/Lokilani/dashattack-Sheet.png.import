@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c4jgqxmw8o7ad"
-path="res://.godot/imported/lokilani_test_batch2.png-fe1cb0afe512e6dbc69d8a0cea6d79e4.ctex"
+uid="uid://c0bi6imvgdud0"
+path="res://.godot/imported/dashattack-Sheet.png-bde9c937018942683b7a1588ad4c9549.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://lokilani_test_batch2.png"
-dest_files=["res://.godot/imported/lokilani_test_batch2.png-fe1cb0afe512e6dbc69d8a0cea6d79e4.ctex"]
+source_file="res://Sprites/Lokilani/dashattack-Sheet.png"
+dest_files=["res://.godot/imported/dashattack-Sheet.png-bde9c937018942683b7a1588ad4c9549.ctex"]
 
 [params]
 

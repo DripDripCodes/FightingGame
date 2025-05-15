@@ -19,6 +19,8 @@ func _ready():
 		if x.scene_file_path == self.scene_file_path:
 			duplicates +=1
 func _process(delta):
+	edgeCheck()
+	$RayCast2D.scale.x = facing
 	$Area2D/CollisionShape.skew = -3*facing
 	if actionable > 0:
 		actionable -=1
@@ -36,37 +38,36 @@ func _process(delta):
 		sprite.play("default")
 	#check if actionable
 	if is_on_floor():
-		if sprite.animation == "n_air" or  sprite.animation == "f_air":
+		if sprite.animation == "n_air" or  sprite.animation == "f_air" or  sprite.animation == "b_air" or \
+		 sprite.animation == "u_air"  or  sprite.animation == "d_air":
 			animating = false
 			actionable = 10
+			lagframes = 5
 	if not grabbing and not grabbed and cooldown <=  0 and actionable <=0 and not dodging:
 		#check if on floor
 		#lag frames for animation = 1 frame of animation is 7 game frames long
-		if lagframes <=0:
-			if jumpFunc():
-				dj-=1
-	
+ 
 		if is_on_floor():
 			
-			if Input.get_action_strength(left_button) < .2 and Input.get_action_strength(right_button) < .2 \
+			if Input.get_action_strength(left_button) < .2 and Input.get_action_strength(right_button) < .2\
 			and not Input.is_action_pressed(down_button) and not Input.is_action_pressed(up_button) :
 				if Input.is_action_just_pressed(light_attack):
 					lAttack()
 				if Input.is_action_just_pressed(med_attack):
 					mAttack()
 			if (Input.get_action_strength(left_button) > .2 or Input.get_action_strength(right_button) > .2) and\
-			((facing*velocity.x) < 1.5*speed) and not Input.is_action_pressed(up_button) and not Input.is_action_pressed(down_button):
+			((facing*velocity.x) < 1.6 *speed) and not Input.is_action_pressed(up_button) and not Input.is_action_pressed(down_button):
 				if Input.is_action_pressed(left_button):
 					if Input.is_action_just_pressed(light_attack):
 						ftilt()
 						facing = -1
-				if Input.is_action_pressed(right_button):
+				if Input.is_action_pressed(right_button) and not Input.is_action_pressed(left_button) :
 					if Input.is_action_just_pressed(light_attack):
 						ftilt()
 						facing = 1
 			else:
 				if (Input.get_action_strength(left_button) > .6 or Input.get_action_strength(right_button) > .6) and\
-				((facing*velocity.x) >= 1.5*speed) and not Input.is_action_pressed(up_button) and not Input.is_action_pressed(down_button):
+				((facing*velocity.x) >= 1.6*speed) and not Input.is_action_pressed(up_button) and not Input.is_action_pressed(down_button):
 					if Input.is_action_pressed(left_button):
 						if Input.is_action_just_pressed(light_attack):
 							dash_attack()
@@ -75,7 +76,7 @@ func _process(delta):
 						if Input.is_action_just_pressed(light_attack):
 							dash_attack()
 							facing = 1
-			if Input.is_action_pressed(up_button):
+			if Input.is_action_pressed(up_button) and not Input.is_action_pressed(down_button):
 				if Input.is_action_just_pressed(light_attack):
 					utilt()
 			if Input.is_action_pressed(down_button):
@@ -90,16 +91,27 @@ func _process(delta):
 				if Input.is_action_just_pressed(light_attack):
 					n_air()
 			if (Input.get_action_strength(left_button) > .3 or Input.get_action_strength(right_button) > .3) and\
-				 not Input.is_action_pressed(up_button) and not Input.is_action_pressed(down_button):
+				 not Input.get_action_strength(up_button) > .3 and not Input.get_action_strength(up_button) > .3:
 				if facing == 1:
-					if Input.is_action_pressed(right_button):
+					if Input.is_action_pressed(right_button)  and not Input.is_action_pressed(left_button):
 						if Input.is_action_just_pressed(light_attack):
 							f_air()
-				if facing == -1:
 					if Input.is_action_pressed(left_button):
 						if Input.is_action_just_pressed(light_attack):
+							b_air()
+				if facing == -1:
+					if Input.is_action_pressed(left_button)  and not Input.is_action_pressed(right_button):
+						if Input.is_action_just_pressed(light_attack):
 							f_air()
-					
+					if Input.is_action_pressed(right_button):
+						if Input.is_action_just_pressed(light_attack):
+							b_air()
+			if Input.get_action_strength(up_button) > .3 and not Input.is_action_pressed(down_button):
+				if Input.is_action_just_pressed(light_attack):
+					u_air()
+			if Input.get_action_strength(down_button) > .3:
+				if Input.is_action_just_pressed(light_attack):
+					d_air()	
 	if grabbing and not grabbed and lagframes <=0 and not dodging:
 		if Input.is_action_just_pressed(light_attack) or\
 			Input.is_action_just_pressed(grab) or\
@@ -112,7 +124,11 @@ func utilt():
 	sprite.play("u_tilt")
 	lagframes = 28
 	actionable = 24
-	await(wait(frames_to_seconds(14)))
+	await(wait(frames_to_seconds(2)))
+	if not is_on_floor():
+		u_air()
+		return
+	await(wait(frames_to_seconds(12)))
 	createHitbox(6,-14,7,14,14,5,3,.2,50)
 func dtilt():
 	sprite.play("d_tilt")
@@ -121,6 +137,10 @@ func dtilt():
 	$Area2D/CollisionShape.position.y +=3
 	lagframes = 14
 	actionable = 10
+	await(wait(frames_to_seconds(2)))
+	if not is_on_floor():
+		d_air()
+		return
 	createHitbox(0,10,20,5,7,5,2,.3,20)
 func ftilt():
 	sprite.play("f_tilt")
@@ -136,21 +156,19 @@ func ftilt():
 
 func lAttack():
 	lagframes = 9 #1 start up, 5 active frames, 3 endlag frames
-
-	await(wait(frames_to_seconds(5)))
+	await(wait(frames_to_seconds(2)))
+	if Input.get_action_strength(right_button) > .2 or  Input.get_action_strength(left_button) > .2:
+			ftilt()
+			return
+	if not is_on_floor():
+		n_air()
+		return
+	await(wait(frames_to_seconds(3)))
 	createHitbox(10,-10,20,20,5,10,10,.9,50)
 
 func mAttack():
-	lagframes = 40 #10 start up, 20 active frames, 10 endlag frames
-	
-	await(wait(frames_to_seconds(10)))
-	createHitbox(10,-10,15,20,5,5,1,.1, 100)
-	await(wait(frames_to_seconds(5)))
-	createHitbox(10,-20,15,10,10,0,0,.1,35)
-	await(wait(frames_to_seconds(10)))
-	createHitbox(10,-10,15,20,5,5,-2,0,50)
-	await(wait(frames_to_seconds(5)))
-	createHitbox(10,10,15,5,5,10,30,.9,50)
+	sprite.play("mattack")
+	lagframes = 35
 func pummel(): 
 	lagframes = 20
 	createHitbox(0,-10,20,20,15,1,0,1,0)
@@ -161,16 +179,19 @@ func grabAttack():
 func dash_attack():
 	sprite.play("dash_attack")
 	move_attack = true
-	lagframes = 42
+	lagframes = 38
 	actionable = 38
 	$Area2D/CollisionShape.position.x += 11*facing
 	move_and_slide()
-	await(wait(frames_to_seconds(2)))
+	await(wait(frames_to_seconds(1)))
 	if not is_on_floor():
 		$Area2D/CollisionShape.position = hboxY
 		move_attack = false
+		lagframes = 0
+		dj+=1
 		f_air()
 		return
+	await(wait(frames_to_seconds(1)))
 	velocity.x = facing*speed*2
 	await(wait(frames_to_seconds(3)))
 	
@@ -178,22 +199,60 @@ func dash_attack():
 	await(wait(frames_to_seconds(2)))
 	createHitbox(0,0,27,12,14,7,20,.9,10)
 	await(wait(frames_to_seconds(3)))
-	velocity.x = (facing*speed)/1.2
-	await(wait(frames_to_seconds(5)))
-	velocity.x = (facing*speed)/1.5
+	velocity.x = (facing*speed)*1.1
+	move_and_slide()
 
 	
 func n_air():
 	sprite.play("n_air")
-	air_move = true  
+	air_move = true 
+	actionable = 18 
+	await(wait(frames_to_seconds(2)))
+	if facing == 1:
+		if Input.get_action_strength(right_button) > .2:
+			f_air()
+			return
+		if Input.get_action_strength(left_button) > .2:
+			b_air()
+			return
+	else:
+		if Input.get_action_strength(right_button) > .2:
+			b_air()
+			return
+		if Input.get_action_strength(left_button) > .2:
+			f_air()
+			return
+	createHitbox(-17,0,28,10,14,5,2,.3,10)
 
-	actionable = 18
+	
+
 func f_air():
 	sprite.play("f_air")
-	actionable =  42
+	actionable =  36
 	air_move = true  
-	print(dj)
 	
+func b_air():
+	sprite.play("b_air")
+	actionable = 32
+	lagframes = 32
+	await(wait(frames_to_seconds(14)))
+	velocity.x = (velocity.x*1.1) + (100*facing)
+
+func u_air():
+	sprite.play("u_air")
+	air_move = true  
+	actionable = 21
+
+func d_air():
+	sprite.play("d_air")
+	actionable = 28
+	lagframes = 42
+	await(wait(frames_to_seconds(7)))
+	velocity.y = jump_force/1.5
+
+	
+	
+
 func _on_area_2d_area_entered(area):
 	platformCalc(area)
 	deathBoxCheck(area)
@@ -218,8 +277,18 @@ func _on_animated_sprite_2d_animation_looped():
 	$Area2D/CollisionShape.scale.y = 1
 	$Area2D/CollisionShape.position = hboxY
 	move_attack = false
+	gravity = base_grav
+	sprite.animation = "default"
+
 func _on_animated_sprite_2d_animation_changed():
 	if sprite.animation != "default":
 		animating = true
-	gravity = 200
-	air_move = false  
+	gravity = base_grav
+	air_move = false
+	print(gravity)  
+func edgeCheck():
+	if actionable >0 and !$RayCast2D.is_colliding() and is_on_floor():
+		velocity.x = 0
+		right=  0
+		left=  0
+		
